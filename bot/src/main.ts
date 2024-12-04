@@ -25,6 +25,13 @@ export const bot = new Bot<MyContext>(environmentVariables.botToken);
 //     }
 // }));
 
+const cheeses = [
+    {
+        name: "Casu Martzu",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Casu_Marzu_cheese.jpg/640px-Casu_Marzu_cheese.jpg"
+    }
+]
+
 
 
 
@@ -45,10 +52,11 @@ bot.use(setConstantsMiddleware)
 
 
 bot.command("cheese", async (ctx) => {
-    const res = await fetch("https://cheese-api.onrender.com/random")
-    const cheese = await res.json()
+    const res = await fetch("https://cheese-api.onrender.com/cheese")
+    const apiCheeses = await res.json()
     // pick a random cheese
-    console.log(cheese)
+    const allCheeses = cheeses + apiCheeses
+    const cheese = allCheeses[Math.floor(Math.random() * allCheeses.length)]
     await ctx.reply(`${cheese.name}\n<a href="${cheese.image}">📸</a> `, { parse_mode: "HTML" });
 });
 
