@@ -33,6 +33,10 @@ const cheeses = [
     {
         name: "Beemster Old",
         image: "https://beemster.de/wp-content/uploads/2023/10/4Beemster-Old-Laib-stehend-mit-Ecke-und-Wuerfel.jpg"
+    },
+    {
+        name: "hushållsost",
+        image: "https://igourmet.com/images/PRODUCT/medium/16278_4_.jpg"
     }
 ]
 
