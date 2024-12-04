@@ -41,6 +41,10 @@ const cheeses = [
     {
         name: "Brie",
         image: "https://cheesemaking.com/cdn/shop/products/brie-recipe.jpg?crop=center&height=1200&v=1533088694&width=1200"
+    },
+    {
+        name: "Pule",
+        image: "https://cdn.tasteatlas.com/images/ingredients/0b65c61252874bfe85e00d18e89f8682.jpg?w=600"
     }
 ]
 
@@ -59,6 +63,11 @@ bot.use(setConstantsMiddleware)
 
 
 
+bot.catch(
+    (ctx) => {
+        console.error(`Error for`);
+    }
+)
 
 
 
