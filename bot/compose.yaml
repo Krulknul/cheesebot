@@ -4,3 +4,5 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: always
+    volumes:
+      - ./bot/db:/app/db:rw
