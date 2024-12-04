@@ -1,14 +1,17 @@
 import { Bot, Context } from "grammy";
 import { EnvironmentVariables } from './environment';
+import { DatabaseService } from "./database";
 
 
 export interface CustomContext extends Context {
     environment: EnvironmentVariables;
+    db: DatabaseService;
 }
 export type MyContext = CustomContext;
 
 
 const environmentVariables = new EnvironmentVariables();
+const database = new DatabaseService(environmentVariables.databaseUrl?.split(':')[1]!);
 
 export const bot = new Bot<MyContext>(environmentVariables.botToken);
 
@@ -53,6 +56,7 @@ const cheeses = [
 
 export async function setConstantsMiddleware(ctx: MyContext, next: () => Promise<void>) {
     ctx.environment = environmentVariables;
+    ctx.db = database;
     await next();
 }
 
@@ -86,6 +90,21 @@ bot.command("cheesecheesecheese", async (ctx) => {
 
     await ctx.reply("CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE ");
 });
+
+bot.command("eat", async (ctx) => {
+    const cheese = cheeses[Math.floor(Math.random() * cheeses.length)]
+    const cheesevalue = await ctx.db.get(ctx.from!.id.toString())
+    if (cheesevalue) {
+        await ctx.db.set(ctx.from!.id.toString(), (parseInt(cheesevalue) + 1).toString())
+    } else {
+        await ctx.db.set(ctx.from!.id.toString(), "1")
+    }
+    await ctx.reply(`${ctx.from?.first_name} eats one whole ${cheese.name}. foocking delicious 🧀
+their cheese count: <strong>${cheesevalue ? parseInt(cheesevalue) + 1 : 1}</strong> cheeses so far.
+${"🧀".repeat(cheesevalue ? parseInt(cheesevalue) + 1 : 1)}
+
+`, { parse_mode: "HTML" });
+})
 
 
 await bot.start();
