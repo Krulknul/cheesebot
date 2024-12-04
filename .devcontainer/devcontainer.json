@@ -1,0 +1,14 @@
+{
+    "name": "Bot only",
+    "dockerFile": "Dockerfile",
+    "forwardPorts": [
+        3000
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "bradlc.vscode-tailwindcss"
+            ]
+        }
+    }
+}
