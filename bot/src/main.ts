@@ -73,9 +73,9 @@ bot.command("cheese", async (ctx) => {
     await ctx.reply(`${cheese.name}\n<a href="${cheese.image}">📸</a> `, { parse_mode: "HTML" });
 });
 
-bot.command("test", async (ctx) => {
+bot.command("cheesecheesecheese", async (ctx) => {
 
-    await ctx.reply("test");
+    await ctx.reply("CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE ");
 });
 
 
