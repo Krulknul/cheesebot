@@ -59,8 +59,9 @@ bot.command("cheese", async (ctx) => {
     const res = await fetch("https://cheese-api.onrender.com/cheese")
     const apiCheeses = await res.json()
     // pick a random cheese
-    const allCheeses = cheeses + apiCheeses
+    const allCheeses = cheeses.concat(apiCheeses)
     const cheese = allCheeses[Math.floor(Math.random() * allCheeses.length)]
+    console.log(cheese)
     await ctx.reply(`${cheese.name}\n<a href="${cheese.image}">📸</a> `, { parse_mode: "HTML" });
 });
 
