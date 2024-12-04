@@ -56,7 +56,7 @@ bot.use(setConstantsMiddleware)
 
 
 bot.command("cheese", async (ctx) => {
-    const res = await fetch("https://cheese-api.onrender.com/cheese")
+    const res = await fetch("https://cheese-api.onrender.com/cheeses")
     const apiCheeses = await res.json()
     // pick a random cheese
     const allCheeses = cheeses.concat(apiCheeses)
