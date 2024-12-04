@@ -48,6 +48,30 @@ const cheeses = [
     {
         name: "Pule",
         image: "https://cdn.tasteatlas.com/images/ingredients/0b65c61252874bfe85e00d18e89f8682.jpg?w=600"
+    },
+    {
+        name: "Stilton",
+        image: "https://upload.wikimedia.org/wikipedia/commons/f/f3/Blue_Stilton_01.jpg"
+    },
+    {
+        name: "Old Amsterdam",
+        image: "https://www.dailyfoodstores.com/cdn/shop/products/OldamsterdamSchuitje300gr_682x.gif?v=1654611027"
+    },
+    {
+        name: "Camembert",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Camembert_de_Normandie_%28AOP%29_11.jpg/640px-Camembert_de_Normandie_%28AOP%29_11.jpg"
+    },
+    {
+        name: "Gouda",
+        image: "https://veldhuyzenkaas.nl/wp-content/uploads/2017/01/comp-gouda-min.png"
+    },
+    {
+        name: "Cheddar",
+        image: "https://www.streeckhuys.nl/wp-content/uploads/Cheddar.jpeg"
+    },
+    {
+        name: "Pecorino",
+        image: "https://upload.wikimedia.org/wikipedia/commons/5/58/Pecorino_romano_on_board_cropped.PNG"
     }
 ]
 
