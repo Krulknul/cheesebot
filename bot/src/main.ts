@@ -37,6 +37,10 @@ const cheeses = [
     {
         name: "hushållsost",
         image: "https://igourmet.com/images/PRODUCT/medium/16278_4_.jpg"
+    },
+    {
+        name: "Brie",
+        image: "https://cheesemaking.com/cdn/shop/products/brie-recipe.jpg?crop=center&height=1200&v=1533088694&width=1200"
     }
 ]
 
