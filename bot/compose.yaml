@@ -1,0 +1,6 @@
+services:
+  cheese:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
