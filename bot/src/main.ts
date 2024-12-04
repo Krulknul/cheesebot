@@ -29,6 +29,10 @@ const cheeses = [
     {
         name: "Casu Martzu",
         image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Casu_Marzu_cheese.jpg/640px-Casu_Marzu_cheese.jpg"
+    },
+    {
+        name: "Beemster Old",
+        image: "https://beemster.de/wp-content/uploads/2023/10/4Beemster-Old-Laib-stehend-mit-Ecke-und-Wuerfel.jpg"
     }
 ]
 
