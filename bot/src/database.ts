@@ -11,7 +11,7 @@ export class DatabaseService {
         this.db = new Database(dbPath);
     }
 
-    async get(key: string) {
+    async get(key: string): Promise<string | null> {
         const stmt = this.db.prepare('SELECT value FROM kvs WHERE key = ?');
         const row: any = stmt.get(key);
         return row ? row.value : null;

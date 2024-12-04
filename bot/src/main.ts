@@ -115,19 +115,59 @@ bot.command("cheesecheesecheese", async (ctx) => {
     await ctx.reply("CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE CHEESE ");
 });
 
+interface User {
+    id: number;
+    name: string;
+    cheeseCount: number;
+}
+
 bot.command("eat", async (ctx) => {
-    const cheese = cheeses[Math.floor(Math.random() * cheeses.length)]
-    const cheesevalue = await ctx.db.get(ctx.from!.id.toString())
-    if (cheesevalue) {
-        await ctx.db.set(ctx.from!.id.toString(), (parseInt(cheesevalue) + 1).toString())
-    } else {
-        await ctx.db.set(ctx.from!.id.toString(), "1")
+    const userId = ctx.from?.id
+    if (!userId) {
+        return
     }
+    const firstName = ctx.from?.first_name
+    if (!firstName) {
+        return
+    }
+    const cheese = cheeses[Math.floor(Math.random() * cheeses.length)]
+    const userString = await ctx.db.get(userId.toString())
+    let user = userString ? JSON.parse(userString) : null
+    if (user) {
+        console.log(user)
+        user = {
+            ...user,
+            cheeseCount: user.cheeseCount + 1
+        }
+        await ctx.db.set(userId.toString(), JSON.stringify(user))
+    } else {
+        user = {
+            id: userId,
+            name: firstName,
+            cheeseCount: 1
+        }
+        await ctx.db.set(userId.toString(), JSON.stringify(user))
+    }
+    console.log(user)
+
     await ctx.reply(`${ctx.from?.first_name} eats one whole ${cheese.name}. foocking delicious 🧀
-their cheese count: <strong>${cheesevalue ? parseInt(cheesevalue) + 1 : 1}</strong> cheeses so far.
-${"🧀".repeat(cheesevalue ? parseInt(cheesevalue) + 1 : 1)}
+their cheese count: <strong>${user.cheeseCount}</strong> cheeses so far.
+${"🧀".repeat(user.cheeseCount)}
 
 `, { parse_mode: "HTML" });
+})
+
+bot.command("eaterboard", async (ctx) => {
+    const allUsers = await ctx.db.db.prepare('SELECT * FROM kvs').all();
+    const users = allUsers.map((user: any) => JSON.parse(user.value))
+    const sortedUsers = users.sort((a: User, b: User) => b.cheeseCount - a.cheeseCount)
+    const topUsers = sortedUsers.slice(0, 10)
+    const topUsersString = topUsers.map((user, index) => `${index + 1}. ${user.name} with ${user.cheeseCount == 69 ? '69 ;)' : user.cheeseCount} cheeses 🧀`).join("\n")
+
+    await ctx.reply(`
+Eaterboard 🧀
+${topUsersString}
+`)
 })
 
 
