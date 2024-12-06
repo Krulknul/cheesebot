@@ -144,7 +144,7 @@ bot.command("eat", async (ctx) => {
 
     if (user) {
         const lastEaten = DateTime.fromISO(user.lastEaten)
-        const thresholdTime = lastEaten.plus({ minutes: 1 })
+        const thresholdTime = lastEaten.plus({ hours: 1 })
         if (now < thresholdTime) {
             const waitMinutes = Math.ceil(thresholdTime.diff(now, 'minutes').minutes)
             await ctx.reply(`eat again in ${waitMinutes == 1 ? 'less than one minute' : `${waitMinutes} minutes`} 🧀`)
