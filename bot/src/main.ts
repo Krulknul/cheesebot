@@ -1,6 +1,7 @@
 import { Bot, Context } from "grammy";
 import { EnvironmentVariables } from './environment';
 import { DatabaseService } from "./database";
+import { DateTime } from "luxon";
 
 
 export interface CustomContext extends Context {
@@ -38,7 +39,7 @@ const cheeses = [
         image: "https://beemster.de/wp-content/uploads/2023/10/4Beemster-Old-Laib-stehend-mit-Ecke-und-Wuerfel.jpg"
     },
     {
-        name: "hushållsost",
+        name: "Hushållsost",
         image: "https://igourmet.com/images/PRODUCT/medium/16278_4_.jpg"
     },
     {
@@ -72,10 +73,24 @@ const cheeses = [
     {
         name: "Pecorino",
         image: "https://upload.wikimedia.org/wikipedia/commons/5/58/Pecorino_romano_on_board_cropped.PNG"
+    },
+    {
+        name: "Mozzarella",
+        image: "https://www.sante.nl/wp-content/uploads/2018/01/hoe-bewaar-je-mozzarella.jpg"
+    },
+    {
+        name: "Parmesan",
+        image: "https://assets.clevelandclinic.org/transform/0a272376-d2c4-4936-8239-7c7ef2e5b4e9/ParmesanCheese-471343790-770x533-1_jpg"
+    },
+    {
+        name: "Feta",
+        image: "https://cheesemaking.com/cdn/shop/products/Feta_hero.jpg?v=1529434179&width=2048"
+    },
+    {
+        name: "Grated cheese",
+        image: "https://cdn.apartmenttherapy.info/image/upload/f_auto,q_auto:eco,c_fit,w_730,h_487/k%2Farchive%2F7c3d16375500d7747f651a0d335f83cfa8a4654e"
     }
 ]
-
-
 
 
 export async function setConstantsMiddleware(ctx: MyContext, next: () => Promise<void>) {
@@ -87,25 +102,15 @@ export async function setConstantsMiddleware(ctx: MyContext, next: () => Promise
 bot.use(setConstantsMiddleware)
 
 
-
-
-
-
 bot.catch(
     (ctx) => {
-        console.error(`Error for`);
+        console.error(ctx.error);
     }
 )
 
 
-
-
 bot.command("cheese", async (ctx) => {
-    const res = await fetch("https://cheese-api.onrender.com/cheeses")
-    const apiCheeses = await res.json()
-    // pick a random cheese
-    const allCheeses = cheeses.concat(apiCheeses)
-    const cheese = allCheeses[Math.floor(Math.random() * allCheeses.length)]
+    const cheese = cheeses[Math.floor(Math.random() * cheeses.length)]
     console.log(cheese)
     await ctx.reply(`${cheese.name}\n<a href="${cheese.image}">📸</a> `, { parse_mode: "HTML" });
 });
@@ -119,6 +124,7 @@ interface User {
     id: number;
     name: string;
     cheeseCount: number;
+    lastEaten: string;
 }
 
 bot.command("eat", async (ctx) => {
@@ -132,28 +138,43 @@ bot.command("eat", async (ctx) => {
     }
     const cheese = cheeses[Math.floor(Math.random() * cheeses.length)]
     const userString = await ctx.db.get(userId.toString())
-    let user = userString ? JSON.parse(userString) : null
+    let user: User = userString ? JSON.parse(userString) : null
+
+    const now = DateTime.now()
+
+    if (user) {
+        const lastEaten = DateTime.fromISO(user.lastEaten)
+        const thresholdTime = lastEaten.plus({ minutes: 1 })
+        if (now < thresholdTime) {
+            const waitMinutes = Math.ceil(thresholdTime.diff(now, 'minutes').minutes)
+            await ctx.reply(`eat again in ${waitMinutes == 1 ? 'less than one minute' : `${waitMinutes} minutes`} 🧀`)
+            return
+        }
+    }
+
     if (user) {
         console.log(user)
         user = {
             ...user,
-            cheeseCount: user.cheeseCount + 1
-        }
+            cheeseCount: user.cheeseCount + 1,
+            lastEaten: now.toISO()
+        } as User
         await ctx.db.set(userId.toString(), JSON.stringify(user))
     } else {
         user = {
             id: userId,
             name: firstName,
-            cheeseCount: 1
-        }
+            cheeseCount: 1,
+            lastEaten: now.toISO()
+        } as User
         await ctx.db.set(userId.toString(), JSON.stringify(user))
     }
     console.log(user)
 
     await ctx.reply(`${ctx.from?.first_name} eats one whole ${cheese.name}. foocking delicious 🧀
 their cheese count: <strong>${user.cheeseCount}</strong> cheeses so far.
+come back again in <strong>an hour</strong> for moar
 ${"🧀".repeat(user.cheeseCount)}
-
 `, { parse_mode: "HTML" });
 })
 
