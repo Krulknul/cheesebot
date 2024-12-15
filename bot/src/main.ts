@@ -7,6 +7,7 @@ import { DateTime } from "luxon";
 export interface CustomContext extends Context {
     environment: EnvironmentVariables;
     db: DatabaseService;
+    map: Map<string, any>;
 }
 export type MyContext = CustomContext;
 
@@ -92,10 +93,12 @@ const cheeses = [
     }
 ]
 
+const map = new Map<string, any>();
 
 export async function setConstantsMiddleware(ctx: MyContext, next: () => Promise<void>) {
     ctx.environment = environmentVariables;
     ctx.db = database;
+    ctx.map = map
     await next();
 }
 
@@ -189,6 +192,45 @@ bot.command("eaterboard", async (ctx) => {
 Eaterboard 🧀
 ${topUsersString}
 `)
+})
+
+
+// command to guess which cheese it is. Shows pic of a cheese and a keyboard to guess. Only pressable by the user who initiated the command
+
+bot.command("guess", async (ctx) => {
+    const userId = ctx.from!.id
+    const randomCheese = () => cheeses[Math.floor(Math.random() * cheeses.length)]
+    const cheese = randomCheese()
+    const wrongCheese = randomCheese()
+    const wrongCheese2 = randomCheese()
+    const keyboard = [cheese, wrongCheese, wrongCheese2].map((cheese) => [{ text: "I guess... It's " + cheese.name }])
+    await ctx.reply(ctx.from?.first_name + `, guess the cheese! 🧀
+ <a href="${cheese.image}">📸</a>
+        `, {
+        reply_markup: {
+            keyboard: keyboard,
+            one_time_keyboard: true
+        }, parse_mode: "HTML"
+    });
+
+    const key = userId.toString() + ":guess"
+    ctx.map.set(key, cheese)
+})
+
+bot.on(":text", async (ctx) => {
+    const userId = ctx.from!.id
+    const key = userId.toString() + ":guess"
+    console.log(ctx.map)
+    const cheese = ctx.map.get(key)
+    if (!cheese) {
+        return
+    }
+    if (ctx.message!.text == "I guess... It's " + cheese.name) {
+        await ctx.reply("Correct! 🧀")
+    } else {
+        await ctx.reply("Wrong! 🧀")
+    }
+    ctx.map.delete(key)
 })
 
 
