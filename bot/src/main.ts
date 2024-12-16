@@ -98,6 +98,9 @@ export const bot = new Bot<MyContext>(environmentVariables.botToken);
 import fs from 'fs';
 
 const cheeses = JSON.parse(fs.readFileSync("./cheeses.json").toString())
+console.log(cheeses.length)
+
+
 
 
 
@@ -219,7 +222,7 @@ bot.command("guess", async (ctx) => {
         .text(cheeseGuess(cheese.name))
         .text(cheeseGuess(wrongCheese.name))
         .oneTime()
-        .selected()
+        .selected(true)
     // const keyboard = [cheese, wrongCheese, wrongCheese2].map((cheese) => [{ text: "I guess... It's " + cheese.name }])
     await ctx.reply(ctx.from?.first_name + `, guess the cheese! 🧀
  <a href="${cheese.image}">📸</a>
