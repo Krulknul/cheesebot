@@ -96,9 +96,8 @@ export const bot = new Bot<MyContext>(environmentVariables.botToken);
 // get cheeses.json
 
 import fs from 'fs';
-import path from 'path';
 
-const cheeses = JSON.parse(fs.readFileSync("../cheeses.json").toString())
+const cheeses = JSON.parse(fs.readFileSync("./cheeses.json").toString())
 
 
 
