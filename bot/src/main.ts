@@ -1,4 +1,4 @@
-import { Bot, Context } from "grammy";
+import { Bot, Context, Keyboard } from "grammy";
 import { EnvironmentVariables } from './environment';
 import { DatabaseService } from "./database";
 import { DateTime } from "luxon";
@@ -205,14 +205,19 @@ bot.command("guess", async (ctx) => {
     const cheese = randomCheese()
     const wrongCheese = randomCheese()
     const wrongCheese2 = randomCheese()
-    const keyboard = [cheese, wrongCheese, wrongCheese2].map((cheese) => [{ text: "I guess... It's " + cheese.name }])
+    const cheeseGuess = (cheese: string) => "I guess... It's " + cheese
+    const keyboard = new Keyboard()
+        .text(cheeseGuess(cheese.name))
+        .text(cheeseGuess(wrongCheese.name))
+        .oneTime()
+        .selected()
+    // const keyboard = [cheese, wrongCheese, wrongCheese2].map((cheese) => [{ text: "I guess... It's " + cheese.name }])
     await ctx.reply(ctx.from?.first_name + `, guess the cheese! 🧀
  <a href="${cheese.image}">📸</a>
         `, {
-        reply_markup: {
-            keyboard: keyboard,
-            one_time_keyboard: true
-        }, parse_mode: "HTML"
+        reply_markup: keyboard, parse_mode: "HTML", reply_parameters: {
+            message_id: ctx.message!.message_id
+        }
     });
 
     const key = userId.toString() + ":guess"
