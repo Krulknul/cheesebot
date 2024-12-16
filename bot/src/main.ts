@@ -173,11 +173,13 @@ bot.command("eat", async (ctx) => {
         await ctx.db.set(userId.toString(), JSON.stringify(user))
     }
     console.log(user)
+    const hundreds = Math.floor(user.cheeseCount / 100)
+    const remainder = user.cheeseCount % 100
 
     await ctx.reply(`${ctx.from?.first_name} eats one whole ${cheese.name}. foocking delicious 🧀
 their cheese count: <strong>${user.cheeseCount}</strong> cheeses so far.
 come back again in <strong>an hour</strong> for moar
-${"🧀".repeat(user.cheeseCount)}
+${"💯".repeat(hundreds) + "🧀".repeat(remainder)}
 `, { parse_mode: "HTML" });
 })
 
