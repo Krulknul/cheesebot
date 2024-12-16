@@ -216,13 +216,19 @@ bot.command("guess", async (ctx) => {
     const randomCheese = () => cheeses[Math.floor(Math.random() * cheeses.length)]
     const cheese = randomCheese()
     const wrongCheese = randomCheese()
-    const wrongCheese2 = randomCheese()
+    const options = [cheese, wrongCheese]
+    options.sort(() => Math.random() - 0.5)
+
     const cheeseGuess = (cheese: string) => "I guess... It's " + cheese
     const keyboard = new Keyboard()
-        .text(cheeseGuess(cheese.name))
-        .text(cheeseGuess(wrongCheese.name))
-        .oneTime()
+        .oneTime(true)
         .selected(true)
+
+    for (const cheese of options) {
+        keyboard.text(cheeseGuess(cheese.name))
+    }
+
+
     // const keyboard = [cheese, wrongCheese, wrongCheese2].map((cheese) => [{ text: "I guess... It's " + cheese.name }])
     await ctx.reply(ctx.from?.first_name + `, guess the cheese! 🧀
  <a href="${cheese.image}">📸</a>
@@ -247,7 +253,7 @@ bot.on(":text", async (ctx) => {
     if (ctx.message!.text == "I guess... It's " + cheese.name) {
         await ctx.reply("Correct! 🧀")
     } else {
-        await ctx.reply("Wrong! 🧀")
+        await ctx.reply("Wrong! 🧀 It's actually " + cheese.name)
     }
     ctx.map.delete(key)
 })
