@@ -30,68 +30,78 @@ export const bot = new Bot<MyContext>(environmentVariables.botToken);
 //     }
 // }));
 
-const cheeses = [
-    {
-        name: "Casu Martzu",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Casu_Marzu_cheese.jpg/640px-Casu_Marzu_cheese.jpg"
-    },
-    {
-        name: "Beemster Old",
-        image: "https://beemster.de/wp-content/uploads/2023/10/4Beemster-Old-Laib-stehend-mit-Ecke-und-Wuerfel.jpg"
-    },
-    {
-        name: "Hushållsost",
-        image: "https://igourmet.com/images/PRODUCT/medium/16278_4_.jpg"
-    },
-    {
-        name: "Brie",
-        image: "https://cheesemaking.com/cdn/shop/products/brie-recipe.jpg?crop=center&height=1200&v=1533088694&width=1200"
-    },
-    {
-        name: "Pule",
-        image: "https://cdn.tasteatlas.com/images/ingredients/0b65c61252874bfe85e00d18e89f8682.jpg?w=600"
-    },
-    {
-        name: "Stilton",
-        image: "https://upload.wikimedia.org/wikipedia/commons/f/f3/Blue_Stilton_01.jpg"
-    },
-    {
-        name: "Old Amsterdam",
-        image: "https://www.dailyfoodstores.com/cdn/shop/products/OldamsterdamSchuitje300gr_682x.gif?v=1654611027"
-    },
-    {
-        name: "Camembert",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Camembert_de_Normandie_%28AOP%29_11.jpg/640px-Camembert_de_Normandie_%28AOP%29_11.jpg"
-    },
-    {
-        name: "Gouda",
-        image: "https://veldhuyzenkaas.nl/wp-content/uploads/2017/01/comp-gouda-min.png"
-    },
-    {
-        name: "Cheddar",
-        image: "https://www.streeckhuys.nl/wp-content/uploads/Cheddar.jpeg"
-    },
-    {
-        name: "Pecorino",
-        image: "https://upload.wikimedia.org/wikipedia/commons/5/58/Pecorino_romano_on_board_cropped.PNG"
-    },
-    {
-        name: "Mozzarella",
-        image: "https://www.sante.nl/wp-content/uploads/2018/01/hoe-bewaar-je-mozzarella.jpg"
-    },
-    {
-        name: "Parmesan",
-        image: "https://assets.clevelandclinic.org/transform/0a272376-d2c4-4936-8239-7c7ef2e5b4e9/ParmesanCheese-471343790-770x533-1_jpg"
-    },
-    {
-        name: "Feta",
-        image: "https://cheesemaking.com/cdn/shop/products/Feta_hero.jpg?v=1529434179&width=2048"
-    },
-    {
-        name: "Grated cheese",
-        image: "https://cdn.apartmenttherapy.info/image/upload/f_auto,q_auto:eco,c_fit,w_730,h_487/k%2Farchive%2F7c3d16375500d7747f651a0d335f83cfa8a4654e"
-    }
-]
+// const cheeses = [
+//     {
+//         name: "Casu Martzu",
+//         image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Casu_Marzu_cheese.jpg/640px-Casu_Marzu_cheese.jpg"
+//     },
+//     {
+//         name: "Beemster Old",
+//         image: "https://beemster.de/wp-content/uploads/2023/10/4Beemster-Old-Laib-stehend-mit-Ecke-und-Wuerfel.jpg"
+//     },
+//     {
+//         name: "Hushållsost",
+//         image: "https://igourmet.com/images/PRODUCT/medium/16278_4_.jpg"
+//     },
+//     {
+//         name: "Brie",
+//         image: "https://cheesemaking.com/cdn/shop/products/brie-recipe.jpg?crop=center&height=1200&v=1533088694&width=1200"
+//     },
+//     {
+//         name: "Pule",
+//         image: "https://cdn.tasteatlas.com/images/ingredients/0b65c61252874bfe85e00d18e89f8682.jpg?w=600"
+//     },
+//     {
+//         name: "Stilton",
+//         image: "https://upload.wikimedia.org/wikipedia/commons/f/f3/Blue_Stilton_01.jpg"
+//     },
+//     {
+//         name: "Old Amsterdam",
+//         image: "https://www.dailyfoodstores.com/cdn/shop/products/OldamsterdamSchuitje300gr_682x.gif?v=1654611027"
+//     },
+//     {
+//         name: "Camembert",
+//         image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Camembert_de_Normandie_%28AOP%29_11.jpg/640px-Camembert_de_Normandie_%28AOP%29_11.jpg"
+//     },
+//     {
+//         name: "Gouda",
+//         image: "https://veldhuyzenkaas.nl/wp-content/uploads/2017/01/comp-gouda-min.png"
+//     },
+//     {
+//         name: "Cheddar",
+//         image: "https://www.streeckhuys.nl/wp-content/uploads/Cheddar.jpeg"
+//     },
+//     {
+//         name: "Pecorino",
+//         image: "https://upload.wikimedia.org/wikipedia/commons/5/58/Pecorino_romano_on_board_cropped.PNG"
+//     },
+//     {
+//         name: "Mozzarella",
+//         image: "https://www.sante.nl/wp-content/uploads/2018/01/hoe-bewaar-je-mozzarella.jpg"
+//     },
+//     {
+//         name: "Parmesan",
+//         image: "https://assets.clevelandclinic.org/transform/0a272376-d2c4-4936-8239-7c7ef2e5b4e9/ParmesanCheese-471343790-770x533-1_jpg"
+//     },
+//     {
+//         name: "Feta",
+//         image: "https://cheesemaking.com/cdn/shop/products/Feta_hero.jpg?v=1529434179&width=2048"
+//     },
+//     {
+//         name: "Grated cheese",
+//         image: "https://cdn.apartmenttherapy.info/image/upload/f_auto,q_auto:eco,c_fit,w_730,h_487/k%2Farchive%2F7c3d16375500d7747f651a0d335f83cfa8a4654e"
+//     }
+// ]
+
+// get cheeses.json
+
+import fs from 'fs';
+import path from 'path';
+
+const cheeses = JSON.parse(fs.readFileSync("../cheeses.json").toString())
+
+
+
 
 const map = new Map<string, any>();
 
