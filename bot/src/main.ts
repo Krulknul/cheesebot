@@ -175,6 +175,68 @@ ${bestoweeName} now has ${bestowee.cheeseCount} cheeses`)
 
 })
 
+// give the other users some cheese
+bot.command('give', async (ctx) => {
+    const userId = ctx.from?.id
+    const recipientId = ctx.message?.reply_to_message?.from?.id
+    const recipientName = ctx.message?.reply_to_message?.from?.first_name
+    if (!userId) {
+        return
+    }
+    if (!recipientId) {
+        return
+    }
+    if (userId == recipientId) {
+        await ctx.reply("You can't give cheese to yourself 🧀")
+        return
+    }
+
+    const params = ctx.message?.text?.split(" ")
+    if (!params) {
+        return
+    }
+    const cheeseCount = parseInt(params[1])
+    if (!cheeseCount || cheeseCount < 1) {
+        return
+    }
+
+    const userString = await ctx.db.get(userId.toString())
+    let user: User = userString ? JSON.parse(userString) : null
+
+    if (!user) {
+        await ctx.reply("You have no cheeses 🧀")
+        return
+    }
+
+    if (user.cheeseCount < cheeseCount) {
+        await ctx.reply("You don't have enough cheeses 🧀")
+        return
+    }
+
+    const recipientString = await ctx.db.get(recipientId.toString())
+    let recipient: User = recipientString ? JSON.parse(recipientString) : null
+
+    if (!recipient) {
+        recipient = {
+            id: recipientId,
+            name: recipientName!,
+            cheeseCount: 0,
+            lastEaten: DateTime.now().toISO()
+        }
+        ctx.db.set(recipientId.toString(), JSON.stringify(recipient))
+    }
+    recipient.cheeseCount += cheeseCount
+    user.cheeseCount -= cheeseCount
+    await ctx.db.set(userId.toString(), JSON.stringify(user))
+    await ctx.db.set(recipientId.toString(), JSON.stringify(recipient))
+    await ctx.reply(`You gave ${cheeseCount} cheeses to ${recipientName} 🧀
+${recipientName} now has ${recipient.cheeseCount} cheeses
+You now have ${user.cheeseCount} cheeses`)
+})
+
+
+
+
 bot.command("cheese_balance", async (ctx) => {
     const userId = ctx.from?.id
     const userString = await ctx.db.get(userId.toString())
