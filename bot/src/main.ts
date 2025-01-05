@@ -136,7 +136,7 @@ ${topUsersString}
 bot.command("bestow", async (ctx) => {
     const userId = ctx.from?.id
     const bestoweeId = ctx.message?.reply_to_message?.from?.id
-    const bestoweeUsername = ctx.message?.reply_to_message?.from?.username
+    const bestoweeName = ctx.message?.reply_to_message?.from?.first_name
     if (!userId) {
         return
     }
@@ -162,7 +162,7 @@ bot.command("bestow", async (ctx) => {
     if (!bestowee) {
         bestowee = {
             id: bestoweeId,
-            name: bestoweeUsername!,
+            name: bestoweeName!,
             cheeseCount: 0,
             lastEaten: DateTime.now().toISO()
         }
