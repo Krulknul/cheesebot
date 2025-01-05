@@ -170,8 +170,8 @@ bot.command("bestow", async (ctx) => {
     }
     bestowee.cheeseCount += cheeseCount
     await ctx.db.set(bestoweeId.toString(), JSON.stringify(bestowee))
-    await ctx.reply(`RÅTTA dev bestowed ${cheeseCount} cheeses upon ${bestoweeUsername} 🧀
-${bestoweeUsername} now has ${bestowee.cheeseCount} cheeses`)
+    await ctx.reply(`RÅTTA dev bestowed ${cheeseCount} cheeses upon ${bestoweeName} 🧀
+${bestoweeName} now has ${bestowee.cheeseCount} cheeses`)
 
 
 
