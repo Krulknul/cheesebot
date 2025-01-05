@@ -115,7 +115,6 @@ bot.command("eat", async (ctx) => {
 
     await ctx.reply(`${ctx.from?.first_name} eats one whole ${cheese.name}. foocking delicious 🧀
 their cheese count: <strong>${user.cheeseCount}</strong> cheeses so far.
-come back again in <strong>an hour</strong> for moar
 ${"💯".repeat(hundreds) + "🔟".repeat(tens) + "🧀".repeat(ones)}
 `, { parse_mode: "HTML" });
 })
