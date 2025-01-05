@@ -4,6 +4,7 @@ import { DatabaseService } from "./database";
 import { DateTime } from "luxon";
 import sharp from 'sharp';
 
+const myUserId = 6277298559
 
 
 export interface CustomContext extends Context {
@@ -130,6 +131,51 @@ bot.command("eaterboard", async (ctx) => {
 Eaterboard 🧀
 ${topUsersString}
 `)
+})
+
+bot.command("bestow", async (ctx) => {
+    const userId = ctx.from?.id
+    const bestoweeId = ctx.message?.reply_to_message?.from?.id
+    const bestoweeUsername = ctx.message?.reply_to_message?.from?.username
+    if (!userId) {
+        return
+    }
+    if (userId != myUserId) {
+        return
+    }
+    if (!bestoweeId) {
+        return
+    }
+
+    const params = ctx.message?.text?.split(" ")
+    if (!params) {
+        return
+    }
+    const cheeseCount = parseInt(params[1])
+    if (!cheeseCount) {
+        return
+    }
+
+    const bestoweeString = await ctx.db.get(bestoweeId.toString())
+    let bestowee: User = bestoweeString ? JSON.parse(bestoweeString) : null
+
+    if (!bestowee) {
+        bestowee = {
+            id: bestoweeId,
+            name: bestoweeUsername!,
+            cheeseCount: 0,
+            lastEaten: DateTime.now().toISO()
+        }
+        ctx.db.set(bestoweeId.toString(), JSON.stringify(bestowee))
+    }
+    bestowee.cheeseCount += cheeseCount
+    await ctx.db.set(bestoweeId.toString(), JSON.stringify(bestowee))
+    await ctx.reply(`RÅTTA dev bestowed ${cheeseCount} cheeses upon ${bestoweeUsername} 🧀`
+    )
+
+
+
+
 })
 
 
