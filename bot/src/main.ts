@@ -175,7 +175,7 @@ ${bestoweeName} now has ${bestowee.cheeseCount} cheeses`)
 
 })
 
-bot.command("balance", async (ctx) => {
+bot.command("cheeseCount", async (ctx) => {
     const userId = ctx.from?.id
     const userString = await ctx.db.get(userId.toString())
     let user: User = userString ? JSON.parse(userString) : null
