@@ -4,7 +4,6 @@ import { DatabaseService } from "./database";
 import { DateTime } from "luxon";
 import sharp from 'sharp';
 
-// import fetch from 'node-fetch';
 
 
 export interface CustomContext extends Context {
@@ -111,11 +110,13 @@ bot.command("eat", async (ctx) => {
     console.log(user)
     const hundreds = Math.floor(user.cheeseCount / 100)
     const remainder = user.cheeseCount % 100
+    const tens = Math.floor(remainder / 10)
+    const ones = remainder % 10
 
     await ctx.reply(`${ctx.from?.first_name} eats one whole ${cheese.name}. foocking delicious 🧀
 their cheese count: <strong>${user.cheeseCount}</strong> cheeses so far.
 come back again in <strong>an hour</strong> for moar
-${"💯".repeat(hundreds) + "🧀".repeat(remainder)}
+${"💯".repeat(hundreds) + "🔟".repeat(tens) + "🧀".repeat(ones)}
 `, { parse_mode: "HTML" });
 })
 
