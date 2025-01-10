@@ -339,10 +339,14 @@ bot.command("flip", async (ctx) => {
     // Calculate results
     if (won) {
         user.cheeseCount += betAmount * 2;
-        await ctx.reply(`The coin lands on ${result}! You won ${betAmount} cheese! 🧀\nNew balance: ${user.cheeseCount} cheese`);
+        await ctx.reply(`The coin lands on ${result}! You won ${betAmount} cheese! 🧀\nNew balance: ${user.cheeseCount} cheese`,
+            { reply_to_message_id: ctx.message!.message_id }
+        );
     } else {
         user.cheeseCount -= betAmount;
-        await ctx.reply(`The coin lands on ${result}! You lost ${betAmount} cheese! 🧀\nNew balance: ${user.cheeseCount} cheese`);
+        await ctx.reply(`The coin lands on ${result}! You lost ${betAmount} cheese! 🧀\nNew balance: ${user.cheeseCount} cheese`.
+            { reply_to_message_id: ctx.message!.message_id }
+        );
     }
 
     // Save updated user data
