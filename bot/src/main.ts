@@ -292,10 +292,10 @@ bot.command("guess", async (ctx) => {
 
 bot.command("flip", async (ctx) => {
     // Parse command parameters
-    const fee = 20;
+    const feePercentage = 10; // 10% fee
     const params = ctx.message?.text?.split(" ");
     if (!params || params.length !== 3) {
-        await ctx.reply(`Usage: /flip <amount> <heads/tails> 🧀\nExample: /roll_cheese 50 heads\nFlipping costs ${fee} cheese. 🧀`);
+        await ctx.reply(`Usage: /flip <amount> <heads/tails> 🧀\nExample: /roll_cheese 50 heads\nFlipping costs ${feePercentage}% of your bet in cheese. 🧀`);
         return;
     }
 
@@ -308,6 +308,9 @@ bot.command("flip", async (ctx) => {
         await ctx.reply("Please bet between 1 and 200 cheese 🧀");
         return;
     }
+
+    // Calculate fee as percentage of bet amount
+    const fee = Math.floor((betAmount * feePercentage) / 100);
 
     // Parse choice
     const choice = params[2].toLowerCase();
