@@ -344,7 +344,7 @@ bot.command("flip", async (ctx) => {
         );
     } else {
         user.cheeseCount -= betAmount;
-        await ctx.reply(`The coin lands on ${result}! You lost ${betAmount} cheese! 🧀\nNew balance: ${user.cheeseCount} cheese`.
+        await ctx.reply(`The coin lands on ${result}! You lost ${betAmount} cheese! 🧀\nNew balance: ${user.cheeseCount} cheese`,
             { reply_to_message_id: ctx.message!.message_id }
         );
     }
