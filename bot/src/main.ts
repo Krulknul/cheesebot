@@ -333,8 +333,8 @@ bot.command("flip", async (ctx) => {
     const won = choice === result;
 
     for (let i = 0; i < 3; i++) {
-        await ctx.reply("🎲");
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await ctx.reply(".");
+        await new Promise(resolve => setTimeout(resolve, 100));
     }
     // Calculate results
     if (won) {
