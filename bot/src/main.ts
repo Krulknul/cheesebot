@@ -325,8 +325,8 @@ bot.command("flip", async (ctx) => {
         return;
     }
 
-    // Deduct the fee
-    user.cheeseCount -= fee;
+    // Deduct the fee and bet amount upfront
+    user.cheeseCount -= (fee + betAmount);
 
     // Perform the coin flip
     const result = Math.random() < 0.5 ? "heads" : "tails";
@@ -336,14 +336,16 @@ bot.command("flip", async (ctx) => {
         await ctx.reply(".");
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
+
     // Calculate results
     if (won) {
+        // On win, add back the bet amount plus the winnings
         user.cheeseCount += betAmount * 2;
         await ctx.reply(`The coin lands on ${result}! You won ${betAmount} cheese! 🧀\nNew balance: ${user.cheeseCount} cheese`,
             { reply_to_message_id: ctx.message!.message_id }
         );
     } else {
-        user.cheeseCount -= betAmount;
+        // On loss, the bet amount is already deducted
         await ctx.reply(`The coin lands on ${result}! You lost ${betAmount} cheese! 🧀\nNew balance: ${user.cheeseCount} cheese`,
             { reply_to_message_id: ctx.message!.message_id }
         );
