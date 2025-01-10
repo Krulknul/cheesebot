@@ -238,7 +238,7 @@ You now have ${user.cheeseCount} cheeses`)
 
 
 bot.command("cheese_balance", async (ctx) => {
-    const userId = ctx.from?.id
+    const userId = ctx.from?.id!
     const userString = await ctx.db.get(userId.toString())
     let user: User = userString ? JSON.parse(userString) : null
     if (!user) {
@@ -288,6 +288,61 @@ bot.command("guess", async (ctx) => {
     const key = userId.toString() + ":guess"
     ctx.map.set(key, cheese)
 })
+
+
+bot.command("flip", async (ctx) => {
+    // Parse command parameters
+    const params = ctx.message?.text?.split(" ");
+    if (!params || params.length !== 3) {
+        await ctx.reply("Usage: /flip <amount> <heads/tails> 🧀\nExample: /roll_cheese 50 heads\nFlipping costs 2 cheese. 🧀");
+        return;
+    }
+
+    const userId = ctx.from?.id;
+    if (!userId) return;
+
+    // Parse bet amount
+    const betAmount = parseInt(params[1]);
+    if (isNaN(betAmount) || betAmount < 1 || betAmount > 200) {
+        await ctx.reply("Please bet between 1 and 200 cheese 🧀");
+        return;
+    }
+
+    // Parse choice
+    const choice = params[2].toLowerCase();
+    if (choice !== "heads" && choice !== "tails") {
+        await ctx.reply("Please choose either 'heads' or 'tails' 🧀");
+        return;
+    }
+
+    // Get user data
+    const userString = await ctx.db.get(userId.toString());
+    let user: User = userString ? JSON.parse(userString) : null;
+
+    if (!user || user.cheeseCount < betAmount + 5) {
+        await ctx.reply(`You need at least ${betAmount + 5} cheese to make this bet (${betAmount} + 5 fee) 🧀`);
+        return;
+    }
+
+    // Deduct the fee
+    user.cheeseCount -= 2;
+
+    // Perform the coin flip
+    const result = Math.random() < 0.5 ? "heads" : "tails";
+    const won = choice === result;
+
+    // Calculate results
+    if (won) {
+        user.cheeseCount += betAmount * 2;
+        await ctx.reply(`The coin lands on ${result}! You won ${betAmount} cheese! 🧀\nNew balance: ${user.cheeseCount} cheese`);
+    } else {
+        user.cheeseCount -= betAmount;
+        await ctx.reply(`The coin lands on ${result}! You lost ${betAmount} cheese! 🧀\nNew balance: ${user.cheeseCount} cheese`);
+    }
+
+    // Save updated user data
+    await ctx.db.set(userId.toString(), JSON.stringify(user));
+});
 
 bot.on(":text", async (ctx) => {
     const userId = ctx.from!.id
