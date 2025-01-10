@@ -292,9 +292,10 @@ bot.command("guess", async (ctx) => {
 
 bot.command("flip", async (ctx) => {
     // Parse command parameters
+    const fee = 2;
     const params = ctx.message?.text?.split(" ");
     if (!params || params.length !== 3) {
-        await ctx.reply("Usage: /flip <amount> <heads/tails> 🧀\nExample: /roll_cheese 50 heads\nFlipping costs 2 cheese. 🧀");
+        await ctx.reply(`Usage: /flip <amount> <heads/tails> 🧀\nExample: /roll_cheese 50 heads\nFlipping costs ${fee} cheese. 🧀`);
         return;
     }
 
@@ -319,18 +320,22 @@ bot.command("flip", async (ctx) => {
     const userString = await ctx.db.get(userId.toString());
     let user: User = userString ? JSON.parse(userString) : null;
 
-    if (!user || user.cheeseCount < betAmount + 5) {
-        await ctx.reply(`You need at least ${betAmount + 5} cheese to make this bet (${betAmount} + 5 fee) 🧀`);
+    if (!user || user.cheeseCount < betAmount + fee) {
+        await ctx.reply(`You need at least ${betAmount + fee} cheese to make this bet (${betAmount} + ${fee} fee) 🧀`);
         return;
     }
 
     // Deduct the fee
-    user.cheeseCount -= 2;
+    user.cheeseCount -= fee;
 
     // Perform the coin flip
     const result = Math.random() < 0.5 ? "heads" : "tails";
     const won = choice === result;
 
+    for (let i = 0; i < 3; i++) {
+        await ctx.reply("🎲");
+        await new Promise(resolve => setTimeout(resolve, 500));
+    }
     // Calculate results
     if (won) {
         user.cheeseCount += betAmount * 2;
