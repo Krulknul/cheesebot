@@ -292,7 +292,7 @@ bot.command("guess", async (ctx) => {
 
 bot.command("flip", async (ctx) => {
     // Parse command parameters
-    const fee = 2;
+    const fee = 20;
     const params = ctx.message?.text?.split(" ");
     if (!params || params.length !== 3) {
         await ctx.reply(`Usage: /flip <amount> <heads/tails> 🧀\nExample: /roll_cheese 50 heads\nFlipping costs ${fee} cheese. 🧀`);
