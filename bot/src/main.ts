@@ -289,25 +289,39 @@ bot.command("guess", async (ctx) => {
     ctx.map.set(key, cheese)
 })
 
-
 bot.command("flip", async (ctx) => {
     // Parse command parameters
     const feePercentage = 10; // 10% fee
     const maxAmount = 1000000;
     const params = ctx.message?.text?.split(" ");
     if (!params || params.length !== 3) {
-        await ctx.reply(`Usage: /flip <amount> <heads/tails> 🧀\nExample: /roll_cheese 50 heads\nFlipping costs ${feePercentage}% of your bet in cheese. 🧀`);
+        await ctx.reply(`Usage: /flip <amount/saudi> <heads/tails> 🧀\nExample: /flip 50 heads\nUse 'saudi' to bet all your cheese!\nFlipping costs ${feePercentage}% of your bet in cheese. 🧀`);
         return;
     }
 
     const userId = ctx.from?.id;
     if (!userId) return;
 
-    // Parse bet amount
-    const betAmount = parseInt(params[1]);
-    if (isNaN(betAmount) || betAmount < 1 || betAmount > maxAmount) {
-        await ctx.reply(`Please bet between 1 and ${maxAmount} cheese 🧀`);
+    // Get user data first since we need it for 'saudi' option
+    const userString = await ctx.db.get(userId.toString());
+    let user: User = userString ? JSON.parse(userString) : null;
+
+    if (!user || user.cheeseCount < 1) {
+        await ctx.reply(`You don't have any cheese! 🧀`);
         return;
+    }
+
+    // Parse bet amount
+    let betAmount: number;
+    if (params[1].toLowerCase() === "saudi") {
+        // Calculate max possible bet considering the fee
+        betAmount = Math.floor(user.cheeseCount / (1 + feePercentage / 100));
+    } else {
+        betAmount = parseInt(params[1]);
+        if (isNaN(betAmount) || betAmount < 1 || betAmount > maxAmount) {
+            await ctx.reply(`Please bet between 1 and ${maxAmount} cheese 🧀`);
+            return;
+        }
     }
 
     // Calculate fee as percentage of bet amount
@@ -320,11 +334,7 @@ bot.command("flip", async (ctx) => {
         return;
     }
 
-    // Get user data
-    const userString = await ctx.db.get(userId.toString());
-    let user: User = userString ? JSON.parse(userString) : null;
-
-    if (!user || user.cheeseCount < betAmount + fee) {
+    if (user.cheeseCount < betAmount + fee) {
         await ctx.reply(`You need at least ${betAmount + fee} cheese to make this bet (${betAmount} + ${fee} fee) 🧀`);
         return;
     }
