@@ -374,42 +374,127 @@ bot.command("flip", async (ctx) => {
 });
 
 
-// Add these functions before the bot commands
-function generateMathProblem(): MathProblem {
-    const operations = ['+', '-', '*'];
-    const operation = operations[Math.floor(Math.random() * operations.length)];
-    let num1: number, num2: number;
+interface MathProblem {
+    question: string;
+    answer: number;
+}
 
-    switch (operation) {
-        case '+':
-            num1 = Math.floor(Math.random() * 50) + 1;
-            num2 = Math.floor(Math.random() * 50) + 1;
-            return {
-                question: `${num1} + ${num2}`,
-                answer: num1 + num2
-            };
-        case '-':
-            num1 = Math.floor(Math.random() * 50) + 26; // Ensure num1 is bigger
-            num2 = Math.floor(Math.random() * 25) + 1;
-            return {
-                question: `${num1} - ${num2}`,
-                answer: num1 - num2
-            };
-        case '*':
-            num1 = Math.floor(Math.random() * 12) + 1; // Keep multiplications manageable
-            num2 = Math.floor(Math.random() * 12) + 1;
-            return {
-                question: `${num1} × ${num2}`,
-                answer: num1 * num2
-            };
-        default:
-            return {
-                question: '1 + 1',
-                answer: 2
-            };
+function generateMultiOperation(): MathProblem {
+    // Generate a problem with two operations
+    const operations = ['+', '-', '*'];
+    const op1 = operations[Math.floor(Math.random() * operations.length)];
+    const op2 = operations[Math.floor(Math.random() * operations.length)];
+
+    const num1 = Math.floor(Math.random() * 50) + 1;
+    const num2 = Math.floor(Math.random() * 50) + 1;
+    const num3 = Math.floor(Math.random() * 20) + 1;
+
+    // Use parentheses randomly
+    const useParens = Math.random() < 0.5;
+
+    if (useParens) {
+        const question = `(${num1} ${op1} ${num2}) ${op2} ${num3}`;
+        let intermediateResult;
+        switch (op1) {
+            case '+': intermediateResult = num1 + num2; break;
+            case '-': intermediateResult = num1 - num2; break;
+            case '*': intermediateResult = num1 * num2; break;
+            default: intermediateResult = num1 + num2;
+        }
+
+        let finalResult;
+        switch (op2) {
+            case '+': finalResult = intermediateResult + num3; break;
+            case '-': finalResult = intermediateResult - num3; break;
+            case '*': finalResult = intermediateResult * num3; break;
+            default: finalResult = intermediateResult + num3;
+        }
+
+        return { question, answer: finalResult };
+    } else {
+        const question = `${num1} ${op1} ${num2} ${op2} ${num3}`;
+        // Handle operator precedence
+        let result;
+        if ((op2 === '*' && (op1 === '+' || op1 === '-'))) {
+            // Multiply first, then add/subtract
+            const product = num2 * num3;
+            result = op1 === '+' ? num1 + product : num1 - product;
+        } else {
+            // Evaluate left to right
+            let intermediate;
+            switch (op1) {
+                case '+': intermediate = num1 + num2; break;
+                case '-': intermediate = num1 - num2; break;
+                case '*': intermediate = num1 * num2; break;
+                default: intermediate = num1 + num2;
+            }
+
+            switch (op2) {
+                case '+': result = intermediate + num3; break;
+                case '-': result = intermediate - num3; break;
+                case '*': result = intermediate * num3; break;
+                default: result = intermediate + num3;
+            }
+        }
+        return { question, answer: result };
     }
 }
 
+function generateDivision(): MathProblem {
+    // Generate division problems that result in whole numbers
+    const answer = Math.floor(Math.random() * 20) + 1;
+    const multiplier = Math.floor(Math.random() * 10) + 1;
+    const dividend = answer * multiplier;
+
+    return {
+        question: `${dividend} ÷ ${multiplier}`,
+        answer: answer
+    };
+}
+
+function generateMathProblem(): MathProblem {
+    // 40% chance of multi-operation, 30% chance of division, 30% chance of simple operation
+    const problemType = Math.random();
+
+    if (problemType < 0.4) {
+        return generateMultiOperation();
+    } else if (problemType < 0.7) {
+        return generateDivision();
+    } else {
+        const operations = ['+', '-', '*'];
+        const operation = operations[Math.floor(Math.random() * operations.length)];
+        let num1: number, num2: number;
+
+        switch (operation) {
+            case '+':
+                num1 = Math.floor(Math.random() * 100) + 1;
+                num2 = Math.floor(Math.random() * 100) + 1;
+                return {
+                    question: `${num1} + ${num2}`,
+                    answer: num1 + num2
+                };
+            case '-':
+                num1 = Math.floor(Math.random() * 100) + 51;
+                num2 = Math.floor(Math.random() * 50) + 1;
+                return {
+                    question: `${num1} - ${num2}`,
+                    answer: num1 - num2
+                };
+            case '*':
+                num1 = Math.floor(Math.random() * 20) + 1;
+                num2 = Math.floor(Math.random() * 20) + 1;
+                return {
+                    question: `${num1} × ${num2}`,
+                    answer: num1 * num2
+                };
+            default:
+                return {
+                    question: '1 + 1',
+                    answer: 2
+                };
+        }
+    }
+}
 // Modified math command to store the message ID
 bot.command("math", async (ctx) => {
     const userId = ctx.from?.id;
