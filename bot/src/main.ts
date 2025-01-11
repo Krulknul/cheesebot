@@ -51,7 +51,7 @@ bot.catch(
 
 
 
-bot.command("good", async (ctx) => {
+bot.command("like", async (ctx) => {
     // Check if command is a reply to a photo message
     const photo = ctx.message?.reply_to_message?.photo;
     if (!photo) {
