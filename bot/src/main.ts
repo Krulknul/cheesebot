@@ -501,7 +501,11 @@ bot.command("math", async (ctx) => {
     if (!userId) return;
 
     const problem = generateMathProblem();
-    const message = await ctx.reply(`Solve this problem for 10 cheese! 🧀\n${problem.question} = ?`);
+    const message = await ctx.reply(`Solve this problem for 10 cheese! 🧀\n${problem.question} = ?`, {
+        reply_parameters: {
+            message_id: ctx.message!.message_id
+        }
+    });
 
     // Store both the problem and the message ID
     const key = `${userId}:math`;
