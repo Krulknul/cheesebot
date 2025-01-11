@@ -254,7 +254,11 @@ bot.command("cheese_balance", async (ctx) => {
 ${"💯".repeat(hundreds) + "🔟".repeat(tens) + "🧀".repeat(ones)}
 `, { parse_mode: "HTML" });
 })
-
+// Add this near the top with other interface declarations
+interface MathProblem {
+    question: string;
+    answer: number;
+}
 
 // command to guess which cheese it is. Shows pic of a cheese and a keyboard to guess. Only pressable by the user who initiated the command
 
@@ -369,21 +373,107 @@ bot.command("flip", async (ctx) => {
     await ctx.db.set(userId.toString(), JSON.stringify(user));
 });
 
-bot.on(":text", async (ctx) => {
-    const userId = ctx.from!.id
-    const key = userId.toString() + ":guess"
-    console.log(ctx.map)
-    const cheese = ctx.map.get(key)
-    if (!cheese) {
-        return
-    }
-    if (ctx.message!.text == "I guess... It's " + cheese.name) {
-        await ctx.reply("Correct! 🧀")
-    } else {
-        await ctx.reply("Wrong! 🧀 It's actually " + cheese.name)
-    }
-    ctx.map.delete(key)
-})
 
+// Add these functions before the bot commands
+function generateMathProblem(): MathProblem {
+    const operations = ['+', '-', '*'];
+    const operation = operations[Math.floor(Math.random() * operations.length)];
+    let num1: number, num2: number;
+
+    switch (operation) {
+        case '+':
+            num1 = Math.floor(Math.random() * 50) + 1;
+            num2 = Math.floor(Math.random() * 50) + 1;
+            return {
+                question: `${num1} + ${num2}`,
+                answer: num1 + num2
+            };
+        case '-':
+            num1 = Math.floor(Math.random() * 50) + 26; // Ensure num1 is bigger
+            num2 = Math.floor(Math.random() * 25) + 1;
+            return {
+                question: `${num1} - ${num2}`,
+                answer: num1 - num2
+            };
+        case '*':
+            num1 = Math.floor(Math.random() * 12) + 1; // Keep multiplications manageable
+            num2 = Math.floor(Math.random() * 12) + 1;
+            return {
+                question: `${num1} × ${num2}`,
+                answer: num1 * num2
+            };
+        default:
+            return {
+                question: '1 + 1',
+                answer: 2
+            };
+    }
+}
+
+// Modified math command to store the message ID
+bot.command("math", async (ctx) => {
+    const userId = ctx.from?.id;
+    if (!userId) return;
+
+    const problem = generateMathProblem();
+    const message = await ctx.reply(`Solve this problem for 10 cheese! 🧀\n${problem.question} = ?`);
+
+    // Store both the problem and the message ID
+    const key = `${userId}:math`;
+    ctx.map.set(key, {
+        problem,
+        messageId: message.message_id
+    });
+    console.log("math problem", problem);
+});
+
+// Modified text handler to check for replies
+bot.on(":text", async (ctx) => {
+    const userId = ctx.from!.id;
+    const guessKey = userId.toString() + ":guess";
+    const mathKey = userId.toString() + ":math";
+
+    // Handle cheese guess
+    const cheese = ctx.map.get(guessKey);
+    if (cheese) {
+        if (ctx.message!.text == "I guess... It's " + cheese.name) {
+            await ctx.reply("Correct! 🧀");
+        } else {
+            await ctx.reply("Wrong! 🧀 It's actually " + cheese.name);
+        }
+        ctx.map.delete(guessKey);
+        return;
+    }
+
+    // Handle math problem
+    const mathData = ctx.map.get(mathKey);
+    if (mathData && ctx.message?.reply_to_message?.message_id === mathData.messageId) {
+        const userAnswer = parseInt(ctx.message.text);
+        if (isNaN(userAnswer)) {
+            return;
+        }
+
+        if (userAnswer === mathData.problem.answer) {
+            const userString = await ctx.db.get(userId.toString());
+            let user: User = userString ? JSON.parse(userString) : {
+                id: userId,
+                name: ctx.from!.first_name,
+                cheeseCount: 0,
+                lastEaten: DateTime.now().toISO()
+            };
+
+            user.cheeseCount += 10;
+            await ctx.db.set(userId.toString(), JSON.stringify(user));
+            await ctx.reply("Correct! Here's 10 cheese! 🧀\nYou now have " + user.cheeseCount + " cheese!", {
+                reply_to_message_id: ctx.message.message_id
+            });
+        } else {
+            await ctx.reply("Wrong answer! The correct answer was " + mathData.problem.answer + " 🧀", {
+                reply_to_message_id: ctx.message.message_id
+            });
+        }
+        ctx.map.delete(mathKey);
+    }
+});
 
 await bot.start();
