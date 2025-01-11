@@ -293,6 +293,7 @@ bot.command("guess", async (ctx) => {
 bot.command("flip", async (ctx) => {
     // Parse command parameters
     const feePercentage = 10; // 10% fee
+    const maxAmount = 1000000;
     const params = ctx.message?.text?.split(" ");
     if (!params || params.length !== 3) {
         await ctx.reply(`Usage: /flip <amount> <heads/tails> 🧀\nExample: /roll_cheese 50 heads\nFlipping costs ${feePercentage}% of your bet in cheese. 🧀`);
@@ -304,8 +305,8 @@ bot.command("flip", async (ctx) => {
 
     // Parse bet amount
     const betAmount = parseInt(params[1]);
-    if (isNaN(betAmount) || betAmount < 1 || betAmount > 200) {
-        await ctx.reply("Please bet between 1 and 200 cheese 🧀");
+    if (isNaN(betAmount) || betAmount < 1 || betAmount > maxAmount) {
+        await ctx.reply(`Please bet between 1 and ${maxAmount} cheese 🧀`);
         return;
     }
 
