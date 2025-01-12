@@ -258,6 +258,7 @@ bot.command("eat", async (ctx) => {
         if (now < thresholdTime) {
             const waitMinutes = Math.ceil(thresholdTime.diff(now, 'minutes').minutes)
             await ctx.reply(`eat again in ${waitMinutes == 1 ? 'less than one minute' : `${waitMinutes} minutes`} 🧀`)
+            await ctx.replyWithPhoto(new InputFile("./eat.png"))
             return
         }
     }
