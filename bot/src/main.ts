@@ -314,6 +314,7 @@ bot.command("bestow", async (ctx) => {
     }
     if (userId != myUserId) {
         ctx.reply("Sorry, ur not kewl enough to bestow cheese out of thin air 🧀")
+        return
     }
     if (!bestoweeId) {
         return
