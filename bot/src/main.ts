@@ -5,7 +5,8 @@ import { DateTime } from "luxon";
 import sharp from 'sharp';
 
 const myUserId = 6277298559
-const mainChatID = 1002305482036
+const mainChatID = -1002305482036
+
 
 
 export interface CustomContext extends Context {
