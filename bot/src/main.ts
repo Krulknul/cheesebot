@@ -5,6 +5,7 @@ import { DateTime } from "luxon";
 import sharp from 'sharp';
 
 const myUserId = 6277298559
+const mainChatID = 1002305482036
 
 
 export interface CustomContext extends Context {
@@ -29,6 +30,13 @@ const cheeses = JSON.parse(fs.readFileSync("./cheeses.json").toString())
 
 console.log(cheeses)
 
+
+async function notInMain(ctx: MyContext, next: () => Promise<void>) {
+    if (ctx.chat?.id == mainChatID) {
+        return
+    }
+    await next()
+}
 
 
 const map = new Map<string, any>();
@@ -237,7 +245,7 @@ interface User {
     lastEaten: string;
 }
 
-bot.command("eat", async (ctx) => {
+bot.command("eat", notInMain, async (ctx) => {
     const userId = ctx.from?.id
     if (!userId) {
         return
@@ -304,6 +312,7 @@ Eaterboard 🧀
 ${topUsersString}
 `)
 })
+
 
 bot.command("bestow", async (ctx) => {
     const userId = ctx.from?.id
@@ -435,7 +444,7 @@ interface MathProblem {
 
 // command to guess which cheese it is. Shows pic of a cheese and a keyboard to guess. Only pressable by the user who initiated the command
 
-bot.command("guess", async (ctx) => {
+bot.command("guess", notInMain, async (ctx) => {
     const userId = ctx.from!.id
     const randomCheese = () => cheeses[Math.floor(Math.random() * cheeses.length)]
     const cheese = randomCheese()
@@ -466,7 +475,7 @@ bot.command("guess", async (ctx) => {
     ctx.map.set(key, cheese)
 })
 
-bot.command("flip", async (ctx) => {
+bot.command("flip", notInMain, async (ctx) => {
     // Parse command parameters
     const feePercentage = 10; // 10% fee
     const maxAmount = 1000000;
