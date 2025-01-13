@@ -32,6 +32,7 @@ console.log(cheeses)
 
 
 async function notInMain(ctx: MyContext, next: () => Promise<void>) {
+    console.log(ctx.chat?.id)
     if (ctx.chat?.id == mainChatID) {
         return
     }
