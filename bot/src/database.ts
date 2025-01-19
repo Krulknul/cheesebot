@@ -3,7 +3,12 @@ import Database from 'better-sqlite3';
 export interface DatabaseBackupService {
     backup: (buffer: Buffer) => Promise<void>;
 }
-
+export interface User {
+    id: number;
+    name: string;
+    cheeseCount: number;
+    lastEaten: string;
+}
 export class DatabaseService {
     db: Database.Database;
 

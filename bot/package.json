@@ -79,6 +79,7 @@
     "pako": "^2.1.0",
     "pastebin-api": "^7.0.0",
     "qrcode": "^1.5.3",
+    "random-unicode-emoji": "^1.0.5",
     "redis": "^4.6.14",
     "rxjs": "^7.8.1",
     "sharp": "^0.33.5",
