@@ -155,7 +155,7 @@ export class EmojiPuzzleCommand extends BaseCommandHandler {
         }
 
         // --- NEW LOGIC: Delete old puzzle message and send updated puzzle as a new message ---
-        const updatedText = `Guess the 🧀:\n\n${renderPuzzle(puzzle)}`;
+        const updatedText = `Guess behind which emoji the 🧀 is lurking:\n\n${renderPuzzle(puzzle)}`;
 
         // 1. Remove the old puzzle message
         try {
