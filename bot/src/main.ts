@@ -13,6 +13,7 @@ import { FlipCommand } from "./flip";
 import { CheeseBalanceCommand } from "./cheeseBalance";
 import { GuessCommand } from "./guess";
 import { BestowCommand, GiveCommand } from "./give";
+import { EmojiPuzzleCommand } from "./puzzle";
 
 
 
@@ -65,7 +66,8 @@ const commands = [
     new CheeseCommand,
     new GuessCommand,
     new CheeseCheeseCheeseCommand,
-    new EaterboardCommand
+    new EaterboardCommand,
+    new EmojiPuzzleCommand
 ]
 
 // Set the bot's commands
