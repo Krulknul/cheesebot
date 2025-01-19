@@ -45,7 +45,7 @@ async function postEmojiPuzzle(
     }
 
     // 4. Post the puzzle
-    const message = await ctx.api.sendMessage(chatId, `Guess the 🧀:\n\n${puzzleText}`);
+    const message = await ctx.api.sendMessage(chatId, `Reply with an emoji to guess where the 🧀 is:\n\n${puzzleText}`);
 
     // 5. Store puzzle data in `activePuzzles`
     activePuzzles.set(message.message_id, {
