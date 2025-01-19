@@ -74,6 +74,15 @@ export class GuessCommand extends BaseCommandHandler {
         // 6) Check correctness (correctIndex is 0 or 1; user sends 1 or 2)
         if (guessNumber === sessionData.correctIndex + 1) {
             await ctx.reply("Correct! 🧀");
+            // Award cheese here
+            const user = await ctx.db.get(userId.toString());
+            if (user) {
+                const parsedUser = JSON.parse(user);
+                parsedUser.cheeseCount += 5;
+                await ctx.db.set(userId.toString(), JSON.stringify(parsedUser));
+            } else {
+                await ctx.reply("User not found in database");
+            }
         } else {
             await ctx.reply("Wrong! 🧀");
         }
