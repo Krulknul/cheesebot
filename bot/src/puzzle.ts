@@ -16,7 +16,6 @@ interface EmojiPuzzle {
 
 const activePuzzles = new Map<number, EmojiPuzzle>();
 
-
 /**
  * Returns an array of N*N random emojis from `allEmojis`. in utf8
  */
@@ -39,7 +38,6 @@ async function postEmojiPuzzle(
     const prizeIndex = Math.floor(Math.random() * puzzle.length);
 
     // 3. Format for message text
-    // e.g. "🍕👺😹♥️💦\n🔥🍌🌶😈😹\n..."
     let puzzleText = "";
     for (let i = 0; i < puzzle.length; i++) {
         puzzleText += puzzle[i];
@@ -76,8 +74,7 @@ function renderPuzzle(puzzle: EmojiPuzzle): string {
 }
 
 export async function onPuzzle(ctx: MyContext) {
-    console.log(ctx.chat)
-    if (!ctx.chat) return; // Safety check in case there's no chat context
+    if (!ctx.chat) return; // Safety check
 
     // You can choose a grid size (N×N). For example, 5×5:
     const gridSize = 5;
@@ -86,108 +83,29 @@ export async function onPuzzle(ctx: MyContext) {
     await postEmojiPuzzle(ctx, ctx.chat.id, gridSize);
 
     // Optional: Acknowledge or confirm the puzzle has started
-    await ctx.reply(`A new ${gridSize}×${gridSize} emoji puzzle has been posted! Reply to it with an emoji to guess where the 🧀 is!`);
+    await ctx.reply(
+        `A new ${gridSize}×${gridSize} emoji puzzle has been posted! Reply to it with an emoji to guess where the 🧀 is!`
+    );
 }
-
-// bot.on("message:text", async (ctx) => {
-//     ctx.reply("This is a text message. Please reply to the puzzle message with an emoji to guess where the 🧀 is!");
-// })
-
-// bot.on("message:text", async (ctx) => {
-//     const replyToMsgId = ctx.message.reply_to_message?.message_id;
-
-//     if (!replyToMsgId) return; // not a reply
-
-//     // Is this a reply to an active puzzle?
-//     const puzzle = activePuzzles.get(replyToMsgId);
-//     if (!puzzle) return;
-
-//     // If puzzle is solved, ignore further guesses (or handle differently if you like)
-//     if (puzzle.solved) {
-//         await ctx.reply("That puzzle was already solved! 🧀");
-//         return;
-//     }
-
-//     const guessEmoji = ctx.message.text.trim();
-//     const index = puzzle.puzzle.indexOf(guessEmoji);
-
-//     // If guessed emoji isn't even in the puzzle, just ignore or reply "invalid guess"
-//     if (index === -1) {
-//         await ctx.reply("That emoji is not in the puzzle. Try again! 🧀");
-//         return;
-//     }
-
-//     // If it's in the puzzle, mark revealed
-//     puzzle.revealed[index] = true;
-
-//     // Check if correct
-//     if (index === puzzle.prizeIndex) {
-//         puzzle.solved = true;
-//         // OPTIONAL: award cheese to the user
-//         try {
-//             const userId = ctx.from?.id;
-//             if (userId) {
-//                 const userString = await ctx.db.get(userId.toString());
-//                 let user: User = userString ? JSON.parse(userString) : {
-//                     id: userId,
-//                     name: ctx.from?.first_name ?? "Someone",
-//                     cheeseCount: 0,
-//                     lastEaten: DateTime.now().toISO()
-//                 };
-//                 user.cheeseCount += 10; // or some other reward
-//                 await ctx.db.set(userId.toString(), JSON.stringify(user));
-
-//                 await ctx.reply(
-//                     `Correct! ${ctx.from?.first_name} found the 🧀!\nYou earned 10 cheese.\nYour new balance: ${user.cheeseCount} 🧀`
-//                 );
-//             }
-//         } catch (err) {
-//             console.error("Error awarding cheese:", err);
-//         }
-//     } else {
-//         // Wrong guess
-//         await ctx.reply(`Nope, that’s not the 🧀!`);
-//     }
-
-//     // Edit the puzzle message
-//     const updatedText = `Guess the 🧀:\n\n${renderPuzzle(puzzle)}`;
-//     try {
-//         await ctx.api.editMessageText(
-//             puzzle.chatId,
-//             puzzle.messageId,
-//             updatedText
-//         );
-//     } catch (err) {
-//         console.error("Error editing puzzle message:", err);
-//     }
-
-//     // If solved, you could remove it from the map or leave it in so that “solved = true”
-//     if (puzzle.solved) {
-//         // activePuzzles.delete(replyToMsgId);
-//         // or just keep the record around so nobody else tries to guess
-//     } else {
-//         // Update the puzzle in the Map
-//         activePuzzles.set(replyToMsgId, puzzle);
-//     }
-// })
 
 export class EmojiPuzzleCommand extends BaseCommandHandler {
     command = "puzzle";
     addToList = false;
-    middlewares = [adminOnly]
+    middlewares = [adminOnly];
+
     async handle(ctx: MyContext) {
         await onPuzzle(ctx);
     }
-    async handlePlainMessage(ctx: MyContext): Promise<void> {
-        const replyToMsgId = ctx.message!.reply_to_message?.message_id;
 
-        if (!replyToMsgId) return; // not a reply
-        console.log("replyToMsgId", replyToMsgId)
+    async handlePlainMessage(ctx: MyContext): Promise<void> {
+        const replyToMsgId = ctx.message?.reply_to_message?.message_id;
+        if (!replyToMsgId) return; // Not a reply
+
         // Is this a reply to an active puzzle?
         const puzzle = activePuzzles.get(replyToMsgId);
         if (!puzzle) return;
 
-        // If puzzle is solved, ignore further guesses (or handle differently if you like)
+        // If puzzle is already solved, ignore further guesses
         if (puzzle.solved) {
             await ctx.reply("That puzzle was already solved! 🧀");
             return;
@@ -196,13 +114,13 @@ export class EmojiPuzzleCommand extends BaseCommandHandler {
         const guessEmoji = ctx.message!.text!.trim();
         const index = puzzle.puzzle.indexOf(guessEmoji);
 
-        // If guessed emoji isn't even in the puzzle, just ignore or reply "invalid guess"
+        // If guessed emoji isn't in the puzzle
         if (index === -1) {
             await ctx.reply("That emoji is not in the puzzle. Try again! 🧀");
             return;
         }
 
-        // If it's in the puzzle, mark revealed
+        // Mark revealed
         puzzle.revealed[index] = true;
 
         // Check if correct
@@ -213,13 +131,15 @@ export class EmojiPuzzleCommand extends BaseCommandHandler {
                 const userId = ctx.from?.id;
                 if (userId) {
                     const userString = await ctx.db.get(userId.toString());
-                    let user: User = userString ? JSON.parse(userString) : {
-                        id: userId,
-                        name: ctx.from?.first_name ?? "Someone",
-                        cheeseCount: 0,
-                        lastEaten: DateTime.now().toISO()
-                    };
-                    user.cheeseCount += 100; // or some other reward
+                    let user: User = userString
+                        ? JSON.parse(userString)
+                        : {
+                            id: userId,
+                            name: ctx.from?.first_name ?? "Someone",
+                            cheeseCount: 0,
+                            lastEaten: DateTime.now().toISO(),
+                        };
+                    user.cheeseCount += 100; // your reward amount
                     await ctx.db.set(userId.toString(), JSON.stringify(user));
 
                     await ctx.reply(
@@ -234,16 +154,29 @@ export class EmojiPuzzleCommand extends BaseCommandHandler {
             await ctx.reply(`Nope, that’s not the 🧀!`);
         }
 
-        // Edit the puzzle message
+        // --- NEW LOGIC: Delete old puzzle message and send updated puzzle as a new message ---
         const updatedText = `Guess the 🧀:\n\n${renderPuzzle(puzzle)}`;
+
+        // 1. Remove the old puzzle message
         try {
-            await ctx.api.editMessageText(
-                puzzle.chatId,
-                puzzle.messageId,
-                updatedText
-            );
+            await ctx.api.deleteMessage(puzzle.chatId, puzzle.messageId);
         } catch (err) {
-            console.error("Error editing puzzle message:", err);
+            console.error("Error deleting puzzle message:", err);
+        }
+
+        // 2. Send a new message with the updated puzzle
+        const newMessage = await ctx.reply(updatedText);
+
+        // 3. Update puzzle.messageId
+        puzzle.messageId = newMessage.message_id;
+
+        // 4. Remove the old puzzle entry and re-add it under the new message ID
+        activePuzzles.delete(replyToMsgId);
+
+        // If you still want to keep track of it (e.g., so more guesses can happen if not solved),
+        // set it under the new message ID. If puzzle is solved, you might *not* re-add it.
+        if (!puzzle.solved) {
+            activePuzzles.set(newMessage.message_id, puzzle);
         }
     }
 }
