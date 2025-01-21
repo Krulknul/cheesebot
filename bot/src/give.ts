@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { BaseCommandHandler, MyContext } from "./abstraction"
 import { User } from "./database";
+import { adminOnly } from "./middleware";
 
 export class GiveCommand extends BaseCommandHandler {
     command = "give";
@@ -68,6 +69,7 @@ You now have ${user.cheeseCount} cheeses`)
 export class BestowCommand extends BaseCommandHandler {
     command = "bestow";
     addToList = false
+    middlewares = [adminOnly]
     async handle(ctx: MyContext) {
         const userId = ctx.from?.id
         const bestoweeId = ctx.message?.reply_to_message?.from?.id
